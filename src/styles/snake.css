@@ -1,0 +1,85 @@
+body {
+  background-color: #1e1e1e;
+}
+
+.snake-gif{
+  border-style: none;
+    margin-left: 90%;
+}
+
+
+.snake-container {
+  margin-top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.grid {
+  margin-bottom:10px;
+  background-color: black;
+  width: 400px;
+  height: 400px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+.grid-item {
+  outline: 1px solid white;
+  width: 40px;
+  height: 40px;
+}
+.snake {
+  outline: 1px solid blue;
+  background-color: blue;
+
+  width: 40px;
+  height: 40px;
+}
+
+
+.food {
+  outline: 1px solid green;
+  background-color: green;
+  width: 40px;
+  height: 40px;
+  
+}
+
+
+
+@media only screen and (max-width: 800px) {
+  .grid {
+    margin-bottom:10px;
+    background-color: black;
+    width: 250px;
+    height: 250px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  .grid-item {
+    outline: 1px solid white;
+    width: 25px;
+    height: 25px;
+  }
+  .snake {
+    outline: 1px solid blue;
+    background-color: blue;
+  
+    width: 25px;
+    height: 25px;
+  }
+  .food {
+    outline: 1px solid green;
+    background-color: green;
+    width: 25px;
+    height: 25px;
+    
+  }
+  
+  .snake-gif{
+    border-style: none;
+    margin-left: 70%;
+  }
+}
+

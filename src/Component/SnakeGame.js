@@ -1,145 +1,191 @@
 import React, { useEffect, useState, useRef } from 'react';
-import Snake from './Snake';
-import Food from './Food';
 import SnakeGif from './SnakeGif'
 import SnakeScore from './SnakeScore'
 import Grid from '@mui/material/Grid';
 import { Button } from '@mui/material';
 import Item from '@mui/material/Grid';
+import '../styles/snake.css';
 
 
-import './snake.css';
-
-const  HEIGHT = 10;
-const  WIDTH  = 10;
+const  GRID_HEIGHT = 10;
+const  WIDTH_HEIGHT  = 10;
 const LEFT  = 37; 
 const UP    = 38;
 const RIGHT = 39; 
 const DOWN  = 40;
 
 
-const getRandom = () => {
+const setRandomCoordinates = () => {
     return  { 
-        x: Math.floor(Math.random() *WIDTH),
-        y: Math.floor(Math.random() *HEIGHT) 
+        x: Math.floor(Math.random() * WIDTH_HEIGHT),
+        y: Math.floor(Math.random() * GRID_HEIGHT) 
     }
 }
 
-const emptyRows = () => [...Array(WIDTH)].map((_) => [...Array(HEIGHT)].map((_)=> 'grid-item'));
-const SnakeGame = () => {
-  const [reset, setReset] = useState(true);
 
-  const [food, setFood] = useState(getRandom());
-  const [direction, setDirection] = useState(RIGHT);
-  const [snakeSpeed, setSnakeSpeed] = useState(200)
+
+const cleanGrid = () => [...Array(WIDTH_HEIGHT)].map((_) => [...Array(GRID_HEIGHT)].map((_)=> 'grid-item'));
+const SnakeGame = () => {
+
+ 
+  const [direction, setDirection] = useState();
+  const [snakeSpeed, setSnakeSpeed] = useState()
   const [changeSnakeSpeed, setChangeSnakeSpeed] = useState(false)
   const [gameOver, setGameOver] = useState(false)
   const [score, setScore] = useState(0)
-  const [snake, setSnake] = useState([getRandom()])
-  const [rows, setRows] = useState(emptyRows())
+  const [snake, setSnake] = useState([])
+  const [rows, setRows] = useState([])
+  const [food, setFood] = useState([]);
+
+  const initState = () => {
+    setRows(cleanGrid())
+    setSnake([{x:9, y:0}])
+    setFood(setRandomCoordinates())
+    setDirection(RIGHT)
+    setSnakeSpeed(300)
+  }
 
   useEffect(()=>{
-  update()
+    initState()
+
+return() => {
+  setRows()
+    setSnake()
+    setFood()
+    setDirection()
+    setSnakeSpeed(0)
+}
   },[])
 
 
 
 useInterval(()=>{
-
+if(gameOver) return
     document.addEventListener('keydown', changeDirection)
-     isEaten()
+     feedSnake()
      moveSnake()
-     isCollapsed()
+     snakeCollapsed()
      }, snakeSpeed)
+
+     useInterval(() => {
+      if(gameOver) return
+      console.log(snakeSpeed)
+      if(changeSnakeSpeed){
+        if(snakeSpeed < 50){
+          return
+        }else if(snakeSpeed >= 50 && snakeSpeed <= 100){
+          setSnakeSpeed(snakeSpeed - 3)
+        }else if(snakeSpeed > 100 && snakeSpeed <= 150){
+          setSnakeSpeed(snakeSpeed - 5)  
+        }else{
+          setSnakeSpeed(snakeSpeed - 7)
+        }
+        setChangeSnakeSpeed(false)
+      }
+       
+    });
 
 
 const moveSnake = () => {
+  if(gameOver) return
     let snakeCopy = snake;
     let head  =  {...snakeCopy[snakeCopy.length-1]};
     switch (direction) {
-        case LEFT:  head.y += -1; break;    
-        case UP:    head.x += -1; break;
-        case RIGHT: head.y += 1;  break;
-        case DOWN:  head.x += 1;  break;
-        default: return;
+        case LEFT:  
+          head.y += -1; 
+          break;    
+        case UP:    
+          head.x += -1; 
+          break;
+        case RIGHT:
+          head.y += 1;  
+          break;
+        case DOWN:  
+          head.x += 1;  
+          break;
+        default: 
+          return;
     }
 
-    head.x += HEIGHT * ((head.x<0)-(head.x>=HEIGHT));
-    head.y += WIDTH * ((head.y<0)-(head.y>=WIDTH));
-    
+    head.x += GRID_HEIGHT * ((head.x<-1)-(head.x>GRID_HEIGHT));
+    head.y += WIDTH_HEIGHT * ((head.y<-1)-(head.y>WIDTH_HEIGHT));
+    if ( head.y > 9 || head.x > 9 || head.y < 0 || head.x < 0 ) {
+      setRows(cleanGrid())
+      setGameOver(true)
+         setScore(0)
+         
+         return
+    }
     snakeCopy.push(head); 
     snakeCopy.shift()
     setSnake(snakeCopy)
     update(); 
 }   
 
-const isEaten = () => {
+const feedSnake = () => {
+  if(gameOver) return
     let snakeCopy  = [...snake];
     let head  =  {...snakeCopy[snakeCopy.length-1]};
     let newFood = food;
 
-    console.log(head, newFood)
     if ((head.x === newFood.x) &&(head.y === newFood.y)) {
         setSnake([...snake, snake.push(head)])
-        setFood(getRandom())
+        setFood(setRandomCoordinates())
         setScore(score+1)
         setChangeSnakeSpeed(true)
 }
 }
 const update = () => {
-    let newRows = emptyRows(); 
-    snake.forEach(element => newRows[element.x][element.y] = 'snake')
+  if(gameOver) return
+    let newRows = cleanGrid(); 
+    snake.forEach(element => {newRows[element.x][element.y] = 'snake'})
     newRows[food.x][food.y] = 'food';
     setRows(newRows)
 }
 
-const isCollapsed = () => {
+const snakeCollapsed = () => {
+  if(gameOver) return
     let newSnake = snake;
-    console.log(newSnake.length)
     let head  = {...newSnake[newSnake.length-1]} 
     for (let i=0; i<newSnake.length-3; i++) {
         if ((head.x === newSnake[i].x) &&(head.y === newSnake[i].y)) {
-          alert('gameOver')
-            setGameOver(true)
+         setScore(0)
+         setRows(cleanGrid())
+         setGameOver(true)
+         return
         }
     }
 }
 
+const startNewGame = () => {
+    setSnake([{x:9, y:0}])
+    setFood(setRandomCoordinates())
+    setDirection(RIGHT)
+    setGameOver(false)
+    setSnakeSpeed(300)
+
+ }
 const changeDirection = ({keyCode}) => { 
     switch (keyCode) {
-        case LEFT:        
+        case 37:        
         setDirection(LEFT)
             break;
-        case RIGHT:
+        case 39:
             setDirection(RIGHT)
             break;
-        case UP:
+        case 38:
             setDirection(UP)
             break;
-        case DOWN:
+        case 40:
             setDirection(DOWN)
             break;
         default:
             break;
     }
+
    
 }    
-  useInterval(() => {
 
-    if(changeSnakeSpeed){
-      if(snakeSpeed < 30){
-        return
-      }else if(snakeSpeed >= 50 && snakeSpeed <= 100){
-        setSnakeSpeed(snakeSpeed - 5)
-      }else if(snakeSpeed > 100 && snakeSpeed <= 150){
-        setSnakeSpeed(snakeSpeed - 7)  
-      }else{
-        setSnakeSpeed(snakeSpeed - 10)
-      }
-      setChangeSnakeSpeed(false)
-    }
-     
-  });
   function useInterval(callback, snakeSpeed) {
     const savedCallback = useRef();
   
@@ -157,11 +203,12 @@ const changeDirection = ({keyCode}) => {
     }, [snakeSpeed]);
   }
 
+ 
 
   return (
     <Grid container justifyContent={'center'}>
     
-    <Button  style={{borderStyle:'solid', backgroundColor:'white', visibility:gameOver ? 'visible':'hidden'}}>You lost. Would you like to play again?</Button> 
+    <Button onClick={startNewGame} style={{borderStyle:'solid', backgroundColor:'white', visibility:gameOver ? 'visible':'hidden'}}>You lost. Would you like to play again?</Button> 
     <Grid item xs={12} md={12} lg={12} xl={12} marginBottom={0}>
       <Item marginBottom={0}>
       <SnakeGif />
@@ -174,8 +221,8 @@ const changeDirection = ({keyCode}) => {
     <Grid item xs={12} md={12} lg={12} xl={12} marginTop={0} alignItems={'center'}>
     <Item>
 
-      <div className="grid" style={{margin:'0 auto'}}>
-     { rows.map((row, i) => row.map((value, j) =>  <div name={`${i}=${j}`} className={value}></div>))}
+      <div className="grid" style={{margin:'0 auto', marginBottom:"20px"}}>
+     { rows.map((row, i) => row.map((value, j) =>  <div name={`${i}=${j}`} className={value} key={j}></div>))}
       </div>
 
       </Item>
