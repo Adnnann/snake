@@ -4,7 +4,7 @@ import SnakeScore from './SnakeScore'
 import Grid from '@mui/material/Grid';
 import { Button } from '@mui/material';
 import Item from '@mui/material/Grid';
-import '../styles/snake.css';
+import '../assets/snake.css'
 
 
 const  GRID_HEIGHT = 10;
@@ -14,20 +14,14 @@ const UP    = 38;
 const RIGHT = 39; 
 const DOWN  = 40;
 
-
 const setRandomCoordinates = () => {
     return  { 
         x: Math.floor(Math.random() * WIDTH_HEIGHT),
         y: Math.floor(Math.random() * GRID_HEIGHT) 
     }
 }
-
-
-
 const cleanGrid = () => [...Array(WIDTH_HEIGHT)].map((_) => [...Array(GRID_HEIGHT)].map((_)=> 'grid-item'));
 const SnakeGame = () => {
-
- 
   const [direction, setDirection] = useState();
   const [snakeSpeed, setSnakeSpeed] = useState()
   const [changeSnakeSpeed, setChangeSnakeSpeed] = useState(false)
@@ -47,18 +41,14 @@ const SnakeGame = () => {
 
   useEffect(()=>{
     initState()
-
-return() => {
-  setRows()
-    setSnake()
-    setFood()
-    setDirection()
-    setSnakeSpeed(0)
-}
+    return() => {
+      setRows()
+        setSnake()
+        setFood()
+        setDirection()
+        setSnakeSpeed(0)
+    }
   },[])
-
-
-
 useInterval(()=>{
 if(gameOver) return
     document.addEventListener('keydown', changeDirection)
@@ -66,10 +56,8 @@ if(gameOver) return
      moveSnake()
      snakeCollapsed()
      }, snakeSpeed)
-
      useInterval(() => {
       if(gameOver) return
-      console.log(snakeSpeed)
       if(changeSnakeSpeed){
         if(snakeSpeed < 50){
           return
@@ -84,8 +72,6 @@ if(gameOver) return
       }
        
     });
-
-
 const moveSnake = () => {
   if(gameOver) return
     let snakeCopy = snake;
@@ -112,28 +98,26 @@ const moveSnake = () => {
     if ( head.y > 9 || head.x > 9 || head.y < 0 || head.x < 0 ) {
       setRows(cleanGrid())
       setGameOver(true)
-         setScore(0)
-         
-         return
+      setScore(0)
+      return
     }
     snakeCopy.push(head); 
     snakeCopy.shift()
     setSnake(snakeCopy)
     update(); 
 }   
-
 const feedSnake = () => {
   if(gameOver) return
     let snakeCopy  = [...snake];
     let head  =  {...snakeCopy[snakeCopy.length-1]};
     let newFood = food;
 
-    if ((head.x === newFood.x) &&(head.y === newFood.y)) {
-        setSnake([...snake, snake.push(head)])
-        setFood(setRandomCoordinates())
-        setScore(score+1)
-        setChangeSnakeSpeed(true)
-}
+  if ((head.x === newFood.x) &&(head.y === newFood.y)) {
+    setSnake([...snake, snake.push(head)])
+    setFood(setRandomCoordinates())
+    setScore(score+1)
+    setChangeSnakeSpeed(true)
+  }
 }
 const update = () => {
   if(gameOver) return
@@ -142,7 +126,6 @@ const update = () => {
     newRows[food.x][food.y] = 'food';
     setRows(newRows)
 }
-
 const snakeCollapsed = () => {
   if(gameOver) return
     let newSnake = snake;
@@ -163,7 +146,6 @@ const startNewGame = () => {
     setDirection(RIGHT)
     setGameOver(false)
     setSnakeSpeed(300)
-
  }
 const changeDirection = ({keyCode}) => { 
     switch (keyCode) {
@@ -181,55 +163,38 @@ const changeDirection = ({keyCode}) => {
             break;
         default:
             break;
-    }
-
-   
+    } 
 }    
-
   function useInterval(callback, snakeSpeed) {
     const savedCallback = useRef();
-  
     useEffect(() => {
       savedCallback.current = callback;
     });
-  
     useEffect(() => {
       function tick() {
         savedCallback.current();
       }
-  
       let id = setInterval(tick, snakeSpeed);
       return () => clearInterval(id);
     }, [snakeSpeed]);
   }
-
- 
-
   return (
     <Grid container justifyContent={'center'}>
-    
-    <Button onClick={startNewGame} style={{borderStyle:'solid', backgroundColor:'white', visibility:gameOver ? 'visible':'hidden'}}>You lost. Would you like to play again?</Button> 
-    <Grid item xs={12} md={12} lg={12} xl={12} marginBottom={0}>
-      <Item marginBottom={0}>
-      <SnakeGif />
-      </Item>
-
-    </Grid>
-    
-   
-   
-    <Grid item xs={12} md={12} lg={12} xl={12} marginTop={0} alignItems={'center'}>
-    <Item>
-
-      <div className="grid" style={{margin:'0 auto', marginBottom:"20px"}}>
-     { rows.map((row, i) => row.map((value, j) =>  <div name={`${i}=${j}`} className={value} key={j}></div>))}
-      </div>
-
-      </Item>
+      <Button onClick={startNewGame} style={{borderStyle:'solid', backgroundColor:'white', visibility:gameOver ? 'visible':'hidden'}}>You lost. Would you like to play again?</Button> 
+      <Grid item xs={12} md={12} lg={12} xl={12} marginBottom={0}>
+        <Item marginBottom={0}>
+          <SnakeGif />
+        </Item>
       </Grid>
-     
+    
+      <Grid item xs={12} md={12} lg={12} xl={12} marginTop={0} alignItems={'center'}>
+        <Item>
+          <div className="grid" style={{margin:'0 auto', marginBottom:"20px"}}>
+        { rows.map((row, i) => row.map((value, j) =>  <div name={`${i}=${j}`} className={value} key={j}></div>))}
+          </div>
+        </Item>
+      </Grid>
       <SnakeScore score={score}/>
-
       </Grid>
   );
 };
