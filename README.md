@@ -22,4 +22,4 @@ material-ui is used in app and of course react
 
 ## Try on SandBox
 
-```https://codesandbox.io/embed/zealous-varahamihira-nhrukp?fontsize=14&hidenavigation=1&theme=dark```
+```https://codesandbox.io/s/snake-game-nhrukp```
