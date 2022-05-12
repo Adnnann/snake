@@ -1,5 +1,5 @@
 
-import SnakeGame from "./Component/SnakeGame";
+import SnakeGame from "./components/SnakeGame";
 
 const App = () => {
   return (
